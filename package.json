@@ -9,13 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nestjs/passport": "^10.0.3",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.3.0",
+    "@supabase/supabase-js": "^2.43.4",
     "@vitejs/plugin-react": "^4.3.1",
+    "nestjs-supabase-auth": "^1.0.9",
     "next": "14.2.4",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "react": "^18",
     "react-dom": "^18",
-    "vite": "^5.2.13"
+    "vite": "^5.2.13",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@types/passport-jwt": "^4.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8",
