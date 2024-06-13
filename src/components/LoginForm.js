@@ -15,9 +15,9 @@ const LoginForm = () => {
     e.preventDefault();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (data.user) {
-      setUser(data.user);
-      console.log(data.user);
-      router.push('/main');
+      localStorage.setItem('isLoggedIn', true);
+      setUser(data.user.id);
+      router.replace('/main');
     } else {
       alert('Giriş başarısız!');
     }

@@ -1,20 +1,26 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useStore = create((set) => ({
+const useStore = create(persist((set) => ({
   brands: [],
   markets: [],
   products: [],
   user: null,
-  setUser: (user) => set({ user }), 
+  clearMarkets: () => set({ markets: [] }),
+  clearProducts: () => set({ products: [] }),
+  setUser: (userId) => set({ user: userId }),
   clearUser: () => set({ user: null }),
-  addMarket: (market) =>
-    set((state) => ({
-      markets: [...state.markets, market],
-    })),
-  addProduct: (product) =>
-    set((state) => ({
-      products: [...state.products, product],
-    })),
+  setUserBrand: (brand) => set((state) => ({
+    brands: [...state.brands, brand],
+  })),
+  addMarket: (market) => set((state) => ({
+    markets: [...state.markets, market],
+  })),
+  addProduct: (product) => set((state) => ({
+    products: [...state.products, product],
+  })),
+}), {
+  name: 'ladderit-store',
 }));
 
 export default useStore;

@@ -13,7 +13,6 @@ export default function RootLayout({ children }) {
     <html lang="tr">
       <body className={inter.className}>
         <header>
-          <h1>Market Yönetim Sistemi</h1>
         </header>
         <main>{children}</main>
       </body>
