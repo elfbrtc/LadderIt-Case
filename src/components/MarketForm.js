@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useEffectOnce } from 'react-use';
+
 import useStore from '../hooks/useStore.js';
 import { supabase } from '../lib/supabaseClient.js';
 import MarketFormModal from './MarketFormModal.js';
@@ -10,19 +12,20 @@ const MarketForm = () => {
   const user = useStore((state) => state.user);
   const markets = useStore((state) => state.markets);
   const addMarket = useStore((state) => state.addMarket);
-  const setUserBrand = useStore((state) => state.setUserBrand);
+  const addBrand = useStore((state) => state.addBrand);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [brandId, setBrandId] = useState('');
   const clearMarkets = useStore((state) => state.clearMarkets);
 
   useEffect(() => {
+    console.log(markets);
     if (user) {
-      clearMarkets();
       fetchUserBrand(user);
     }
   }, [user]);
 
   const fetchUserBrand = async (userId) => {
+    console.log(userId);
     try {
       const { data, error } = await supabase
         .from('Brand')
@@ -32,7 +35,7 @@ const MarketForm = () => {
       if (error) {
         throw error;
       }
-      setUserBrand(data);
+      addBrand(data);
       setBrandId(data.id);
       await fetchUserMarket(data.id)
     } catch (error) {
@@ -41,6 +44,7 @@ const MarketForm = () => {
   };
 
   const fetchUserMarket = async (brandId) => {
+    clearMarkets();
     try {
       const { data, error } = await supabase
         .from('Market')
@@ -49,9 +53,12 @@ const MarketForm = () => {
       if (error) {
         throw error;
       }
+      console.log(data);
+      clearMarkets();
       data.forEach(market => {
         addMarket(market);
       });
+
     } catch (error) {
       console.error('Kullanıcı brand bilgisi alınırken bir hata oluştu:', error.message);
     }
@@ -72,7 +79,6 @@ const MarketForm = () => {
       if (error) {
         throw error;
       }
-      console.log(data)
       addMarket(data[0]);
       setIsModalOpen(false);
     } catch (error) {
@@ -95,7 +101,6 @@ const MarketForm = () => {
         <title>Market Ekleme Sayfası</title>
       </Head>
 
-      {/* Üst kısım (Header) */}
       <header className="w-full p-4 bg-white shadow-md">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">Marketler</h1>
@@ -108,10 +113,8 @@ const MarketForm = () => {
         </div>
       </header>
 
-      {/* Orta kısım (Search ve Market Listeleri) */}
       <div className="w-full p-4 flex justify-center">
         <div className="max-w-6xl mx-auto">
-          {/* Search */}
           <div className="mb-4">
             <input
               type="text"
@@ -120,7 +123,7 @@ const MarketForm = () => {
             />
           </div>
 
-          <MarketList/>
+          <MarketList markets = {markets}/>
         
         </div>
       </div>

@@ -10,7 +10,7 @@ const useStore = create(persist((set) => ({
   clearProducts: () => set({ products: [] }),
   setUser: (userId) => set({ user: userId }),
   clearUser: () => set({ user: null }),
-  setUserBrand: (brand) => set((state) => ({
+  addBrand: (brand) => set((state) => ({
     brands: [...state.brands, brand],
   })),
   addMarket: (market) => set((state) => ({
