@@ -12,7 +12,7 @@ const MarketForm = () => {
   const markets = useStore((state) => state.markets);
   const addMarket = useStore((state) => state.addMarket);
   const addBrand = useStore((state) => state.addBrand);
-  const addProduct = useStore((state) => state.addProduct);
+  const [filteredMarkets, setFilteredMarkets] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [brandId, setBrandId] = useState("");
   const clearMarkets = useStore((state) => state.clearMarkets);
@@ -23,11 +23,20 @@ const MarketForm = () => {
 
   useEffect(() => {
     setLoading(true);
-    console.log(markets);
+  
     if (user) {
-      fetchUserBrand(user).catch((error) => setLoading(false));
+      fetchUserBrand(user)
+        .then(() => setLoading(false))
+        .catch(() => setLoading(false));
     }
   }, [user]);
+
+  useEffect(() => {
+    const filtered = markets.filter((market) =>
+      market.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredMarkets(filtered);
+  }, [searchText, markets]);
 
   const fetchUserBrand = async (userId) => {
     console.log(userId);
@@ -113,10 +122,6 @@ const MarketForm = () => {
     setSearchText(event.target.value);
   };
 
-  const filteredMarkets = markets.filter((market) =>
-    market.name.toLowerCase().includes(searchText.toLowerCase())
-  );
-
   const handleAddMarket = async (marketData) => {
     console.log(marketData);
     try {
@@ -191,13 +196,17 @@ const MarketForm = () => {
               </div>
             )}
 
-            {!loading &&
-              searchText.trim() !== "" &&
-              filteredMarkets.length === 0 && (
-                <div className="flex items-center justify-center">
-                  <p className="text-gray-600">Market bulunamadı.</p>
-                </div>
-              )}
+            {!loading && searchText.trim() === '' && markets.length === 0 && (
+              <div className="flex items-center justify-center">
+                <p className="text-gray-600">Market bulunamadı.</p>
+              </div>
+            )}
+
+            {!loading && searchText.trim() !== '' && filteredMarkets.length === 0 && (
+              <div className="flex items-center justify-center">
+                <p className="text-gray-600">Arama sonucunda market bulunamadı.</p>
+              </div>
+            )}
 
             {!loading && filteredMarkets.length > 0 && (
               <MarketList filteredMarkets={filteredMarkets} />

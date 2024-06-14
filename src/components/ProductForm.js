@@ -10,17 +10,28 @@ const ProductForm = ({ id }) => {
   const addProduct = useStore((state) => state.addProduct);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [marketId, setMarketId] = useState(id);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [marketName, setMarketName] = useState("");
   const clearProducts = useStore((state) => state.clearProducts);
   const [loading, setLoading] = useState(false);
 
   const [searchText, setSearchText] = useState("");
-
   useEffect(() => {
     setLoading(true);
+  
     if (marketId) {
-      fetchUserProduct(marketId).catch(() => setLoading(false));
+      fetchUserProduct(marketId)
+        .then(() => setLoading(false))
+        .catch(() => setLoading(false));
     }
   }, [marketId]);
+
+  useEffect(() => {
+    const filtered = products.filter((product) =>
+      product.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchText, products]);
 
   const fetchUserProduct = async (marketId) => {
     try {
@@ -36,6 +47,7 @@ const ProductForm = ({ id }) => {
       data.forEach((product) => {
         addProduct(product);
       });
+      await fetchMarketName(marketId);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -43,6 +55,23 @@ const ProductForm = ({ id }) => {
         "Kullanıcı brand bilgisi alınırken bir hata oluştu:",
         error.message
       );
+    }
+  };
+
+  const fetchMarketName = async (marketId) => {
+    try {
+      const { data, error } = await supabase
+        .from("Market")
+        .select("name")
+        .eq("id", marketId)
+        .single();
+      if (error) {
+        throw error;
+      }
+      setMarketName(data.name);
+    } catch (error) {
+      setLoading(false);
+      console.error("Market adı alınırken bir hata oluştu:", error.message);
     }
   };
 
@@ -75,10 +104,6 @@ const ProductForm = ({ id }) => {
     setSearchText(event.target.value);
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchText.toLowerCase())
-  );
-
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -96,7 +121,7 @@ const ProductForm = ({ id }) => {
 
         <header className="w-full p-4 bg-white shadow-md">
           <div className="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">Ürünler</h1>
+            <h1 className="text-xl font-bold">{marketName}</h1>
             <button
               onClick={openModal}
               className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none"
@@ -131,13 +156,17 @@ const ProductForm = ({ id }) => {
               </div>
             )}
 
-            {!loading &&
-              searchText.trim() !== "" &&
-              filteredProducts.length === 0 && (
-                <div className="flex items-center justify-center">
-                  <p className="text-gray-600">Ürün bulunamadı.</p>
-                </div>
-              )}
+            {!loading && searchText.trim() === '' && products.length === 0 && (
+              <div className="flex items-center justify-center">
+                <p className="text-gray-600">Ürün bulunamadı.</p>
+              </div>
+            )}
+
+            {!loading && searchText.trim() !== '' && filteredProducts.length === 0 && (
+              <div className="flex items-center justify-center">
+                <p className="text-gray-600">Arama sonucunda ürün bulunamadı.</p>
+              </div>
+            )}
 
             {!loading && filteredProducts.length > 0 && (
               <ProductList products={filteredProducts} />
