@@ -1,8 +1,8 @@
-import { useState, useRef } from 'react';
-import { Modal, Button, TextInput, Label } from 'flowbite-react';
+import { useState, useRef } from "react";
+import { Modal, Button, TextInput, Label } from "flowbite-react";
 
 const ProductFormModal = ({ marketId, onAddProduct, onClose }) => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(0);
   const quantityInputRef = useRef(null);
   const nameInputRef = useRef(null);
@@ -18,7 +18,13 @@ const ProductFormModal = ({ marketId, onAddProduct, onClose }) => {
   };
 
   return (
-    <Modal show={true} size="md" popup={true} onClose={onClose} initialFocus={nameInputRef}>
+    <Modal
+      show={true}
+      size="md"
+      popup={true}
+      onClose={onClose}
+      initialFocus={nameInputRef}
+    >
       <Modal.Header>Ürün Ekle</Modal.Header>
       <Modal.Body>
         <div className="space-y-6">
@@ -43,7 +49,6 @@ const ProductFormModal = ({ marketId, onAddProduct, onClose }) => {
             />
           </div>
         </div>
-        
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleSubmit}>Ekle</Button>

@@ -19,6 +19,11 @@ const useStore = create(persist((set) => ({
   addProduct: (product) => set((state) => ({
     products: [...state.products, product],
   })),
+  updateProductQuantity: (id, quantity) => set((state) => ({
+    products: state.products.map((product) =>
+      product.id === id ? { ...product, quantity } : product
+    ),
+  })),
 }), {
   name: 'ladderit-store',
 }));
